@@ -1,0 +1,9 @@
+subset=data.frame(subset(surveydata, select = c(PE1, PE2, PE3, PE4,
+                                                  EE1, EE2, EE3, EE4,
+                                                  FC1, FC2, FC3, FC4,
+                                                  BAC1, BAC2, BAC3, BAC4,
+                                                  BAI1, BAI2, BAI3
+                                                  )))
+
+descriptivestats <- mvn(surveydata.subset)
+mnormal
