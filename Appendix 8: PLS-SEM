@@ -1,0 +1,96 @@
+# load in the dataset from excel
+
+View(surveydata)
+
+# create survey data subset consisting of latent variable questions
+
+surveydata.subset = data.frame(subset(surveydata8, select = c(PE1, PE2, PE3, PE4,
+                                                             EE1, EE2, EE3,
+                                                             FC1, FC2, FC3, FC4,
+                                                             BAC1, BAC2, BAC3, 
+                                                             BAI1, BAI2, BAI3,
+                                                             BAU1)))
+
+# define the measurement model
+
+simple_mm <- constructs(
+  composite("performanceexpectancy", multi_items("PE",1:4)),
+  composite("effortexpectancy", multi_items("EE", 1:4)),
+  composite("facilitatingconditions", multi_items("FC", 1:4)),
+  composite("BAconfidence", multi_items("BAC", 1:4)),
+  composite("behaviouralintention", multi_items("BAI", 1:3)),
+  composite("BAuse", single_item("BAU1")))
+
+# define the structural model
+
+simple_sm <- relationships(
+  paths(from = c("performanceexpectancy", "effortexpectancy", "BAconfidence"), to = c("behaviouralintention")),
+  paths(from = c("behaviouralintention", "facilitatingconditions"), to =c("BAuse")) 
+)
+
+# estimate the model
+
+BAadoptionmodel <- estimate_pls(data = surveydata.subset,
+                                 measurement_model = simple_mm,
+                                 structural_model = simple_sm)
+
+# summarise the model
+
+summary_BAadoptionmodel <- summary(BAadoptionmodel)
+
+# view model paths
+
+summary_BAadoptionmodel$paths
+
+# model reliability measures
+
+summary_BAadoptionmodel$reliability
+
+# HTMT values
+
+summary_BAadoptionmodel$validity$htmt
+
+# VIF values
+
+summary_BAadoptionmodel$vif_antecedents
+
+
+# bootstrap the model
+
+boot_BAadoptionmodel_rep <- bootstrap_model(seminr_model = BAadoptionmodel,
+                                             nboot = 1000,
+                                             cores = NULL,
+                                             seed = 123)
+
+# summarise the bootstrapped model
+
+sum_boot_BAadoptionmodel_rep <- summary(boot_BAadoptionmodel_rep)
+
+# bootstrapped model paths
+
+sum_boot_BAadoptionmodel_rep$bootstrapped_paths
+
+# bootstrapped model loadings
+
+sum_boot_BAadoptionmodel_rep$bootstrapped_loadings
+
+# generate path diagram
+
+plot(BAadoptionmodel)
+
+# path coefficients and t-values
+
+paths <- sum_boot_BAadoptionmodel_rep$bootstrapped_paths[, "Original Est."]
+tvalues <- sum_boot_BAadoptionmodel_rep$bootstrapped_paths[, "T Stat."]
+
+# define degrees of freedom
+
+df = nrow(mobi)
+
+# calculate pvalues from tvalues and df; round to 3 decimal places
+
+pvalues <- round( pt(tvalues, df, lower.tail = FALSE), 3)
+
+# table of paths, tvalues, pvalues
+
+data.frame(paths, tvalues, pvalues)
