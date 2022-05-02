@@ -1,1 +1,2 @@
-
+mnormal <- mvn(surveydata.subset)
+mnormal
