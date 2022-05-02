@@ -1,10 +1,10 @@
 # load in the dataset from excel
 
-View(surveydata)
+View(SurveyData)
 
 # create survey data subset consisting of latent variable questions
 
-surveydata.subset = data.frame(subset(surveydata8, select = c(PE1, PE2, PE3, PE4,
+surveydata.subset = data.frame(subset(SurveyData, select = c(PE1, PE2, PE3, PE4,
                                                              EE1, EE2, EE3,
                                                              FC1, FC2, FC3, FC4,
                                                              BAC1, BAC2, BAC3, 
